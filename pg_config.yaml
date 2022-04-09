@@ -9,11 +9,11 @@ tables:
     - column_type: "float"
       db_column: "rating"
       isnull: "NOT NULL"
-    - column_type: "TIMESTAMPTZ"
+    - column_type: "int"
       db_column: "timestamp"
       isnull: "NOT NULL"
     - column_type: "primary"
-      db_column: "(userId,movieId)"
+      db_column: '("userId","movieId")'
       isnull: "NOT NULL"
   movies:
     - column_type: "int"
@@ -23,10 +23,10 @@ tables:
       db_column: "title"
       isnull: "NOT NULL"
     - column_type: "VARCHAR"
-      db_column: "genre"
+      db_column: "genres"
       isnull: "NULL"
     - column_type: "primary"
-      db_column: "(movieId)"
+      db_column: '("movieId")'
       isnull: "NOT NULL"
   link:
     - column_type: "int"
@@ -39,5 +39,5 @@ tables:
       db_column: "imdbId"
       isnull: "NOT NULL"
     - column_type: "primary"
-      db_column: "(movieId,tmdbId)"
+      db_column: '("movieId","tmdbId")'
       isnull: "NOT NULL"

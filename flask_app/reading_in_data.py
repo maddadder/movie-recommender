@@ -3,7 +3,10 @@ import numpy as np
 import sqlalchemy
 from sqlalchemy import create_engine
 
-import flask_app.config2 as config2
+try:
+    import flask_app.config2 as config2
+except ImportError:
+    import config2 as config2
 
 # establishing SQL connection
 engine = create_engine(

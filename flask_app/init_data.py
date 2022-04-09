@@ -13,7 +13,12 @@ try:
     from psycopg2.extensions import quote_ident
 except ImportError:
     raise ImportError("To use this command you must install the psycopg2-binary (or psycopg2) package")
-import flask_app.config2 as config2
+
+try:
+    import flask_app.config2 as config2
+except ImportError:
+    import config2 as config2
+
 
 logger = logging.getLogger('my_logger')
 
@@ -69,23 +74,20 @@ def create_table(conn, table: Table):
         )
         curs.execute(sql, [table.name])
         column_names = {row[0] for row in curs.fetchall()}
-        print(column_names)
         needed_columns = False
         set_primary_key = ""
         for definition in table.definitions:
             if definition.db_column not in column_names:
                 if definition.column_type == "primary":
-                    set_primary_key = f'ALTER TABLE {quote_ident(table.name, curs)} ADD PRIMARY KEY {definition.db_column} '
+                    set_primary_key = f'ALTER TABLE {quote_ident(table.name, curs)} ADD CONSTRAINT {quote_ident(table.name+"_pk", curs)} PRIMARY KEY {definition.db_column}; '
                 else:
                     needed_columns = True
-                    sql = f'ALTER TABLE {quote_ident(table.name, curs)} ADD COLUMN {quote_ident(definition.db_column, curs)} {definition.column_type} {definition.isnull}'
+                    sql = f'ALTER TABLE {quote_ident(table.name, curs)} ADD COLUMN {quote_ident(definition.db_column, curs)} {definition.column_type} {definition.isnull}; '
                     print(sql)
                     curs.execute(sql)
-                    conn.commit()
         if needed_columns:
             print(set_primary_key)
             curs.execute(set_primary_key)
-            conn.commit()
             
 
 def create_tables(conn, tables: List[Table]):
@@ -135,13 +137,13 @@ with open("./pg_config.yaml") as txt:
         with open('./data/movies.csv', 'r') as file:
             #movieId,title,genres
             df = pd.read_csv(file, index_col='movieId')
-            df.to_sql(name = 'movies', con = engine, if_exists = 'replace', index_label = 'movieId')
+            df.to_sql(name = 'movies', con = engine, if_exists = 'append', index_label = 'movieId')
             with open('./data/ratings.csv', 'r') as file:
                 #userId,movieId,rating,timestamp
                 df = pd.read_csv(file, index_col='userId')
-                df.to_sql(name = 'movie_ratings', con = engine, if_exists = 'replace', index_label = 'userId')
+                df.to_sql(name = 'movie_ratings', con = engine, if_exists = 'append', index_label = 'userId')
                 with open('./data/links.csv', 'r') as file:
                     #movieId,imdbId,tmdbId
                     df = pd.read_csv(file, index_col='movieId')
-                    df.to_sql(name = 'link', con = engine, if_exists = 'replace', index_label = 'movieId')
+                    df.to_sql(name = 'link', con = engine, if_exists = 'append', index_label = 'movieId')
                     is_success = True
