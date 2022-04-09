@@ -239,6 +239,6 @@ def collaborative_filtering(final_recomand, n, new_user_input):
     user_recomand = pd.DataFrame(
         pd.Series(user_recomand, name="movieId"), columns=["movieId"])
 
-    user_recomand["movieId"] = user_recomand["movieId"].astype(int)
+    user_recomand["movieId"] = user_recomand["movieId"].astype(float).astype(int)
 
     return user_recomand

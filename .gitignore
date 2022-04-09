@@ -9,7 +9,6 @@ config.py
 *.so
 config*
 
-*csv
 
 ###exclude data
 .flask_app/data

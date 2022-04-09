@@ -35,7 +35,7 @@ def index():
     """
     top10 = most_rated
     input_id = pd.merge(top10, link, on='movieId')
-    input_id["tmdbId"] = input_id["tmdbId"].astype(int)
+    input_id["tmdbId"] = input_id["tmdbId"].astype(float).astype(int)
     movie_info_input = pd.DataFrame(columns=["title", "overview", "image_url", "popularity",
                                              "release_date", "video_url"])
     # Get info from TMDB
@@ -85,7 +85,7 @@ def recommender():
     selection = preference_option["rating"]
 
     input_frame = input_frame.merge(top10, on="label")[["movieId", "rating"]]
-    input_frame["rating"] = input_frame["rating"].astype(int)
+    input_frame["rating"] = input_frame["rating"].astype(float).astype(int)
 
     # select only the rated movies and calucte how many ratings the user has inputed
     # return dictionary of the form {movieId: rating}
@@ -117,7 +117,7 @@ def recommender():
 
     # get information from TMDB
     rec_link = pd.merge(rec, link, on='movieId')
-    rec_link["tmdbId"] = rec_link["tmdbId"].astype(int)
+    rec_link["tmdbId"] = rec_link["tmdbId"].astype(float).astype(int)
     movie_info = pd.DataFrame(columns=["title", "overview", "image_url", "popularity",
                                        "release_date", "video_url"])
     for i in rec_link["tmdbId"]:
