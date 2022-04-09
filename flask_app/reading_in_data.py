@@ -10,7 +10,7 @@ except ImportError:
 
 # establishing SQL connection
 engine = create_engine(
-    f"postgresql://zalando:{config2.psql_pw}@192.168.1.151:30001/movies")
+    f"postgresql://{config2.database_user}:{config2.psql_pw}@{config2.host}:{config2.port}/{config2.database_name}")
 
 # read in movie rating data
 select_query = """

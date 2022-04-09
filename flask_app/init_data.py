@@ -97,11 +97,7 @@ def create_tables(conn, tables: List[Table]):
 
 def import_data():
 
-    
-    conn = psycopg2.connect(database="movies",
-                            user='zalando', password=config2.psql_pw, 
-                            host='192.168.1.151', port='30001'
-    )
+    conn = psycopg2.connect(database=config2.database_name,user=config2.database_user, password=config2.psql_pw, host=config2.host, port=config2.port)
     
     conn.autocommit = True
     cursor = conn.cursor()
@@ -126,13 +122,13 @@ def import_data():
 is_success = False
 with open("./pg_config.yaml") as txt:
     tables = read_definitions(txt)
-    with psycopg2.connect(f"postgresql://zalando:{config2.psql_pw}@192.168.1.151:30001/movies") as conn:
+    with psycopg2.connect(f"postgresql://{config2.database_user}:{config2.psql_pw}@{config2.host}:{config2.port}/{config2.database_name}") as conn:
         conn.autocommit = True
         logger.debug(f"Connected to Postgres")
         create_tables(conn, tables)
         conn.commit()
     
-        engine = create_engine(f"postgresql://zalando:{config2.psql_pw}@192.168.1.151:30001/movies")
+        engine = create_engine(f"postgresql://{config2.database_user}:{config2.psql_pw}@{config2.host}:{config2.port}/{config2.database_name}")
 
         with open('./data/movies.csv', 'r') as file:
             #movieId,title,genres

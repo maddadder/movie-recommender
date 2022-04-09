@@ -27,6 +27,9 @@ svd_r_hat = pd.read_pickle("./flask_app/saved_models/R_hat.pkl")
 
 app = Flask(__name__)
 
+@app.route('/health')
+def health():
+    return render_template('health.html')
 
 @app.route('/')
 def index():

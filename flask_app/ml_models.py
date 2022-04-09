@@ -212,7 +212,6 @@ def recomandations_similar_users(similar_users, orig_data, cols_above, cols_belo
         recomand["rating_sim"] = recomand["rating"] * sim
         recomand["sim"] = sim
         final_recomand = final_recomand.append(recomand, ignore_index=True)
-
     return final_recomand
 
 
@@ -229,7 +228,7 @@ def collaborative_filtering(final_recomand, n, new_user_input):
     recomand_sum = final_recomand.groupby(
         "movieId")[["rating_sim", "sim"]].sum().reset_index()
     recomand_sum["most_similar"] = recomand_sum["rating_sim"] / \
-        recomand_sum["sim"]
+        final_recomand["sim"]
 
     user_recomand = recomand_sum[~recomand_sum["movieId"].isin(list(new_user_input.keys()))].sort_values(
         by="most_similar", ascending=False)["movieId"][:n]

@@ -1,6 +1,7 @@
 cd /home/alice/git3/movie-recommender
 python3 -m venv ../mrbif
 source ../mrbif/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
 
 cd /home/alice/git3/movie-recommender
