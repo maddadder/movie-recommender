@@ -7,7 +7,7 @@ import flask_app.config2 as config2
 
 # establishing SQL connection
 engine = create_engine(
-    f"postgres://postgres:{config2.psql_pw}@127.0.0.1:5432/movies")
+    f"postgresql://zalando:{config2.psql_pw}@192.168.1.151:30001/movies")
 
 # read in movie rating data
 select_query = """
@@ -17,7 +17,7 @@ engine_output = engine.execute(select_query)
 
 final_dict = []
 for row in engine_output:
-    dict1 = {"userId": int((row["userid"])), "movieId": int((row["movieid"])),
+    dict1 = {"userId": int((row["userId"])), "movieId": int((row["movieId"])),
              "rating": float((row["rating"]))}
     final_dict.append(dict1)
 
@@ -39,7 +39,7 @@ engine_output_movies = engine.execute(select_movies)
 
 movies_final = []
 for row in engine_output_movies:
-    dict1 = {"movieId": int((row["movieid"])),
+    dict1 = {"movieId": int((row["movieId"])),
              "title": str((row["title"]))}
     movies_final.append(dict1)
 
@@ -63,8 +63,8 @@ engine_output_link = engine.execute(select_link)
 
 movies_link = []
 for row in engine_output_link:
-    dict1 = {"movieId": int((row["movieid"])),
-             "tmdbId": str((row["tmdbid"]))}
+    dict1 = {"movieId": int((row["movieId"])),
+             "tmdbId": str((row["tmdbId"]))}
     movies_link.append(dict1)
 
 link = pd.DataFrame(movies_link)

@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "movierec/bin/python",
+    "python.pythonPath": "../mrbif/bin/python",
     "python.linting.pylintEnabled": true,
     "python.linting.enabled": true,
     "python.linting.lintOnSave": true,

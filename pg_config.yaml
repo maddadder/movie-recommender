@@ -1,0 +1,19 @@
+tables:
+  movie_ratings:
+    - column_type: "int"
+      db_column: "userId"
+    - column_type: "int"
+      db_column: "movieId"
+    - column_type: "float"
+      db_column: "rating"
+
+  movies:
+    - column_type: "int"
+      db_column: "movieId"
+    - column_type: "VARCHAR"
+      db_column: "title"
+  link:
+    - column_type: "int"
+      db_column: "movieId"
+    - column_type: "VARCHAR"
+      db_column: "tmdbId"
