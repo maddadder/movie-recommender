@@ -33,11 +33,7 @@ class TMDBInfo:
         movie = Movie()
         print(movie)
         m = movie.details(movieId)
-        m.overview = "overview"
-        m.title = "title"
-        m.popularity = "popularity"
-        m.release_date = "10/10/2000"
-        poster = '/test.img' #m.poster_path
+        poster = m.poster_path
         image_base = 'http://image.tmdb.org/t/p/w185'
         image_url = image_base+poster
 

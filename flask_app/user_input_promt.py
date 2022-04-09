@@ -26,8 +26,8 @@ sorted_matrix = user_rating_matrix.groupby(
 movies_with_title = pd.merge(sorted_matrix, movies, on='movieId')
 
 # categorizes movies into old and new category, then selects those with highest standard dev
-old = movies_with_title[movies_with_title["year"] <= 2000].head(25)
-new = movies_with_title[movies_with_title["year"] > 2000].head(25)
+old = movies_with_title[movies_with_title["year"] <= 2010].head(25)
+new = movies_with_title[movies_with_title["year"] > 2010].head(25)
 old.sort_values(by="std_rating", ascending=False, inplace=True)
 new.sort_values(by="std_rating", ascending=False, inplace=True)
 old = old["movieId"].unique()
@@ -47,8 +47,8 @@ def input_movies(old=old, new=new, movies_with_title=movies_with_title):
 
     """
 
-    old_choice = np.random.choice(old, 7, replace=True) # False
-    new_choice = np.random.choice(new, 8, replace=True) # False
+    old_choice = np.random.choice(old, 7, replace=False)
+    new_choice = np.random.choice(new, 8, replace=False)
     m1 = movies_with_title[movies_with_title["movieId"].isin(old_choice)]
     m2 = movies_with_title[movies_with_title["movieId"].isin(new_choice)]
     most_rated = m2.append(m1, ignore_index=True)

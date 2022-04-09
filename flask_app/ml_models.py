@@ -1,5 +1,5 @@
 """
-Comprises all ML_models for recomandation systems:
+Comprises all ML_models for recommendation systems:
 - SVD from surpise
 - NMF from sklearn
 - combination of collaborative filtering with SVD
@@ -15,13 +15,12 @@ import pickle
 from collections import defaultdict
 from sklearn.metrics.pairwise import cosine_similarity
 
-
 def split_data(thrsh, movies):
     """
-    split data in old and new movies based on a thershold
+    Splits data in old and new movies based on a threshold
     ####Parameters###:
-        -thrsh: year 
-        - movies : data frame containing movie Ids, year and title(title optional)
+        - thrsh: year 
+        - movies: data frame containing movie Ids, year and title (title optional)
     ####Returns####:
         - 2 lists of Movie Ids: one with movie above the threshold, 
             one with movies below the threshold
@@ -74,7 +73,7 @@ def predict_new_user_input(algo, user_input, orig_data, user_id=None):
     return pred
 
 
-def recommand_n(predictions, n=2, rating=False, uid=0):
+def recommand_n(predictions, n=10, rating=False, uid=0):
     """Recommends n best movies based on SVD algo from surpise
         # Parameters###:
 
@@ -209,7 +208,7 @@ def recomandations_similar_users(similar_users, orig_data, cols_above, cols_belo
             pred.drop(columns=list_drop, inplace=True)
         pred = pred.T
         pred = pred.squeeze()
-        recomand = recommand_n(pred.to_dict(), 2, True, uid=usr)
+        recomand = recommand_n(pred.to_dict(), 10, True, uid=usr)
         recomand["rating_sim"] = recomand["rating"] * sim
         recomand["sim"] = sim
         final_recomand = final_recomand.append(recomand, ignore_index=True)
@@ -227,13 +226,11 @@ def collaborative_filtering(final_recomand, n, new_user_input):
     """
 
     final_recomand["rating_sim"] = final_recomand["rating_sim"].astype(float)
-    #recomand_sum = final_recomand.groupby(
-    #    "movieId")[["rating_sim", "sim"]].sum().reset_index()
-    # ^ broken
-    recomand_sum = final_recomand
+    recomand_sum = final_recomand.groupby(
+        "movieId")[["rating_sim", "sim"]].sum().reset_index()
     recomand_sum["most_similar"] = recomand_sum["rating_sim"] / \
         recomand_sum["sim"]
-    
+
     user_recomand = recomand_sum[~recomand_sum["movieId"].isin(list(new_user_input.keys()))].sort_values(
         by="most_similar", ascending=False)["movieId"][:n]
     user_recomand = pd.DataFrame(

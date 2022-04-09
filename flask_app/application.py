@@ -31,20 +31,19 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     """Display the most rated movies to the user
-       and prompts user to rate them: solves cold start problem
+       and prompts the user to rate them: solves cold start problem.
     """
     top10 = most_rated
     input_id = pd.merge(top10, link, on='movieId')
-    input_id["tmdbId"] = input_id["tmdbId"].astype(float).astype(int)
+    input_id["tmdbId"] = input_id["tmdbId"].astype(int)
     movie_info_input = pd.DataFrame(columns=["title", "overview", "image_url", "popularity",
                                              "release_date", "video_url"])
     # Get info from TMDB
-    
     for i in input_id["tmdbId"]:
         t = TMDBInfo(movieId=i, api_key=tmdb.api_key, tmdb=TMDb())
         overview, image_url, title, popularity, release_date = t.get_details()
-        #t.get_movie_trailer()
-        video_url = '' #t.get_video_url()
+        t.get_movie_trailer()
+        video_url = t.get_video_url()
 
         args = {"title": title, "overview": overview, "image_url": image_url, "popularity": popularity,
                 "release_date": release_date, "video_url": video_url}
@@ -57,14 +56,25 @@ def index():
         movie1=top10['title'][1],
         movie2=top10['title'][2],
         movie3=top10['title'][3],
+        movie4=top10['title'][4],
+        movie5=top10['title'][5],
+        movie6=top10['title'][6],
+        movie7=top10['title'][7],
+        movie8=top10['title'][8],
+        movie9=top10['title'][9],
+        movie10=top10['title'][10],
+        movie11=top10['title'][11],
+        movie12=top10['title'][12],
+        movie13=top10['title'][13],
+        movie14=top10['title'][14],
         movie_info_input=movie_info_input
     )
 
 
 @app.route('/recommender')
 def recommender():
-    """Intercept user input and make recommendations based on their
-        initial rating
+    """Intercepts user input and makes recommendations
+    based on their initial rating.
     """
     top10 = most_rated
     top10 = pd.DataFrame(top10.reset_index())
@@ -96,20 +106,20 @@ def recommender():
     input_frame = input_frame.to_dict()["rating"]
 
     # make recomandations to the user
-    cols_above, cols_below, _ = split_data(2000, movies=movies_df)
+    cols_above, cols_below, _ = split_data(2010, movies=movies_df)
     if len_ratings > 5:
         rec = nmf_recommand(model=nmf, new_user=input_frame,
                             n=5, orig_data=ratings_pivot, cols_above=cols_above, cols_below=cols_below, selection=int(selection))
 
     else:
         sim_matrix = calculate_similarity_matrix(
-            input_frame, orig_data=ratings_pivot, n_users=2)
+            input_frame, orig_data=ratings_pivot, n_users=3)
         rec_for_sim_users = recomandations_similar_users(
             sim_matrix, orig_data=svd_r_hat, cols_above=cols_above,
             cols_below=cols_below, selection=int(selection))
 
         rec = collaborative_filtering(
-            rec_for_sim_users, n=2, new_user_input=input_frame)
+            rec_for_sim_users, n=5, new_user_input=input_frame)
 
     # display only the titles
     rec = pd.merge(rec, movies_df, on='movieId')
@@ -123,8 +133,8 @@ def recommender():
     for i in rec_link["tmdbId"]:
         t = TMDBInfo(movieId=i, api_key=tmdb.api_key, tmdb=TMDb())
         overview, image_url, title, popularity, release_date = t.get_details()
-        #t.get_movie_trailer()
-        video_url = '/bla.mp4' #t.get_video_url()
+        t.get_movie_trailer()
+        video_url = t.get_video_url()
 
         args = {"title": title, "overview": overview, "image_url": image_url, "popularity": popularity,
                 "release_date": release_date, "video_url": video_url}
