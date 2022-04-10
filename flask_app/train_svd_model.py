@@ -10,13 +10,13 @@ from surprise import Reader, dump
 from surprise import SVD
 from surprise import accuracy
 import pickle
-
+import joblib
 from reading_in_data import user_rating_matrix, user_rating
 
 
 R = user_rating_matrix[["userId", "movieId", "rating"]]
 
-if '__name__' == '__main__':
+if __name__ == "__main__":
     """train the SV model from scikit predict 
         and validate the model """
 
@@ -33,13 +33,15 @@ if '__name__' == '__main__':
     svd.fit(R_surpise)
 
     # test and fill in the missing ratings
-    testset = R_surpise.build_anti_testset()
-    predictions = svd.test(testset)
-    # score model
-    print(accuracy.rmse(predictions))
-    # 0.7426613175948654
-    print(accuracy.mse(predictions))
-    # 0.5515458326517415
+    u_have_lots_of_ram = False
+    if u_have_lots_of_ram:
+        testset = R_surpise.build_anti_testset()
+        predictions = svd.test(testset)
+        # score model
+        print(accuracy.rmse(predictions))
+        # 0.7426613175948654
+        print(accuracy.mse(predictions))
+        # 0.5515458326517415
 
     # Reconstruction of original matrix
 
@@ -59,9 +61,9 @@ if '__name__' == '__main__':
     reconstruct[known_entries] = original[known_entries]
     reconstructed_frame = pd.DataFrame(
         reconstruct, columns=user_rating.columns, index=user_rating.index)
-    reconstructed_frame.to_pickle("R_hat.pkl")
+    reconstructed_frame.to_pickle("./flask_app/saved_models/R_hat.pkl")
 
     # save model
-    # filename = 'svd_model.sav'
+    filename = './flask_app/saved_models/svd_model.sav'
 
-    # joblib.dump(svd, filename)
+    joblib.dump(svd, filename)

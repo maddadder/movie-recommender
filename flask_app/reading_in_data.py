@@ -6,7 +6,10 @@ from sqlalchemy import create_engine
 try:
     import flask_app.config2 as config2
 except ImportError:
+    # this is not a flask app
     import config2 as config2
+    config2.host = config2.host2
+    config2.port = config2.port2
 
 # establishing SQL connection
 engine = create_engine(
@@ -14,7 +17,7 @@ engine = create_engine(
 
 # read in movie rating data
 select_query = """
-    SELECT * FROM movie_ratings;
+    SELECT * FROM movie_ratings ORDER BY "userId" LIMIT 300000;
     """
 engine_output = engine.execute(select_query)
 

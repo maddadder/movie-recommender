@@ -17,7 +17,7 @@
     # rename Dockerfile.example to Dockerfile
     # build the image with the secret
     docker-compose build
-    docker push 192.168.1.151:32000/movie-recommender:1.0.6
+    docker push 192.168.1.151:32000/movie-recommender:1.0.8
     microk8s helm3 install movie-recommender ./movie-recommender
     OR 
     helm upgrade movie-recommender ./movie-recommender

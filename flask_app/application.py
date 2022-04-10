@@ -109,7 +109,7 @@ def recommender():
     input_frame = input_frame.to_dict()["rating"]
 
     # make recomandations to the user
-    cols_above, cols_below, _ = split_data(2010, movies=movies_df)
+    cols_above, cols_below, _ = split_data(1991, movies=movies_df)
     if len_ratings > 5:
         rec = nmf_recommand(model=nmf, new_user=input_frame,
                             n=5, orig_data=ratings_pivot, cols_above=cols_above, cols_below=cols_below, selection=int(selection))

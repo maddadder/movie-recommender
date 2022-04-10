@@ -16,4 +16,6 @@ flask run
 kubectl patch svc acid-minimal-cluster --patch '{"spec": { "type": "NodePort", "ports": [ { "nodePort": 30001, "port": 5432, "protocol": "TCP", "targetPort": 5432 } ] } }'
 
 #to set the db once, run:
-python init_data.py
+python flask_app/init_data.py
+python flask_app/train_svd_model.py
+python flask_app/train_nmf_model.py

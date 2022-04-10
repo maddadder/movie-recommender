@@ -10,6 +10,7 @@ tables:
       db_column: "rating"
       isnull: "NOT NULL"
     - column_type: "int"
+      #column_type: "timestamp"
       db_column: "timestamp"
       isnull: "NOT NULL"
     - column_type: "primary"

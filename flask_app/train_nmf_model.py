@@ -23,9 +23,9 @@ if __name__ == "__main__":
         max_iter=1000
     )
     model.fit(ratings_pivot)
-    model.reconstruction_err_
+    print(model.reconstruction_err_)
     # save model
-    joblib.dump(model, "nmf.sav")
+    joblib.dump(model, "./flask_app/saved_models/nmf.sav")
 
     P = model.transform(ratings_pivot)
     Q = model.components_.T
