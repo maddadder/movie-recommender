@@ -12,7 +12,7 @@ from flask_app.ml_models import nmf_recommand,  \
     calculate_similarity_matrix, \
     recomandations_similar_users, collaborative_filtering, \
     split_data
-from flask_app.user_input_promt import most_rated
+from flask_app.user_input_promt import get_most_rated
 from flask_app.get_TMDB_info import TMDBInfo
 
 tmdb = TMDb()
@@ -27,16 +27,19 @@ svd_r_hat = pd.read_pickle("./flask_app/saved_models/R_hat.pkl")
 
 app = Flask(__name__)
 
+top10 = None
+
 @app.route('/health')
 def health():
     return render_template('health.html')
 
 @app.route('/')
 def index():
+    global top10
     """Display the most rated movies to the user
        and prompts the user to rate them: solves cold start problem.
     """
-    top10 = most_rated
+    top10 = get_most_rated()
     input_id = pd.merge(top10, link, on='movieId')
     input_id["tmdbId"] = input_id["tmdbId"].astype(int)
     movie_info_input = pd.DataFrame(columns=["title", "overview", "image_url", "popularity",
@@ -76,10 +79,11 @@ def index():
 
 @app.route('/recommender')
 def recommender():
+    global top10
     """Intercepts user input and makes recommendations
     based on their initial rating.
     """
-    top10 = most_rated
+    
     top10 = pd.DataFrame(top10.reset_index())
     top10["label"] = 'movie' + top10["index"].astype(str)
 
@@ -143,6 +147,8 @@ def recommender():
                 "release_date": release_date, "video_url": video_url}
         movie_info = movie_info.append(args, ignore_index=True)
 
+    # reset top 10
+    top10 = None
     return render_template('recommendations.html', movies=recs, movie_info=movie_info)
 
 

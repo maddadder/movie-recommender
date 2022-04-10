@@ -9,33 +9,7 @@ import pandas as pd
 
 from flask_app.reading_in_data import user_rating_matrix, movies
 
-
-# data preparation
-
-user_rating_matrix["sum_rating"] = user_rating_matrix.groupby("movieId")[
-    "rating"].transform("sum")
-user_rating_matrix["std_rating"] = user_rating_matrix.groupby(
-    "movieId")["rating"].transform("std")
-
-# removes duplicates created by the transform function
-sorted_matrix = user_rating_matrix.groupby(
-    ["movieId"])["std_rating", "sum_rating"].mean().sort_values(by='sum_rating', ascending=False)
-
-
-# merges data frame with movies data frame containing titles
-movies_with_title = pd.merge(sorted_matrix, movies, on='movieId')
-
-# categorizes movies into old and new category, then selects those with highest standard dev
-old = movies_with_title[movies_with_title["year"] <= movies_with_title["year"].mean()].head(25)
-new = movies_with_title[movies_with_title["year"] > movies_with_title["year"].mean()].head(25)
-print(movies_with_title["year"].mean())
-old.sort_values(by="std_rating", ascending=False, inplace=True)
-new.sort_values(by="std_rating", ascending=False, inplace=True)
-old = old["movieId"].unique()
-new = new["movieId"].unique()
-
-
-def input_movies(old=old, new=new, movies_with_title=movies_with_title):
+def input_movies(old, new, movies_with_title):
     """
     Returns a data frame with 15 movie titles and their movieId link
     ##Parameters##:
@@ -55,6 +29,31 @@ def input_movies(old=old, new=new, movies_with_title=movies_with_title):
     most_rated = m2.append(m1, ignore_index=True)
     return most_rated[['title', 'movieId']]
 
+def get_most_rated():
+    """
+    get most rated
+    """
+    # data preparation
 
-most_rated = input_movies(
-    old=old, new=new, movies_with_title=movies_with_title)
+    user_rating_matrix["sum_rating"] = user_rating_matrix.groupby("movieId")[
+        "rating"].transform("sum")
+    user_rating_matrix["std_rating"] = user_rating_matrix.groupby(
+        "movieId")["rating"].transform("std")
+
+    # removes duplicates created by the transform function
+    sorted_matrix = user_rating_matrix.groupby(
+        ["movieId"])["std_rating", "sum_rating"].mean().sort_values(by='sum_rating', ascending=False)
+
+
+    # merges data frame with movies data frame containing titles
+    movies_with_title = pd.merge(sorted_matrix, movies, on='movieId')
+
+    # categorizes movies into old and new category, then selects those with highest standard dev
+    old = movies_with_title[movies_with_title["year"] <= movies_with_title["year"].mean()].head(100)
+    new = movies_with_title[movies_with_title["year"] > movies_with_title["year"].mean()].head(100)
+    print(movies_with_title["year"].mean())
+    old.sort_values(by="std_rating", ascending=False, inplace=True)
+    new.sort_values(by="std_rating", ascending=False, inplace=True)
+    old = old["movieId"].unique()
+    new = new["movieId"].unique()
+    return input_movies(old=old, new=new, movies_with_title=movies_with_title)
