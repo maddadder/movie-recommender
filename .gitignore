@@ -13,6 +13,15 @@ config*
 ###exclude data
 .flask_app/data
 .flask_app/saved_models
+data/link.csv
+data/movie.csv
+data/rating.csv
+
+###exclude models
+flask_app/saved_models/nmf.sav
+flask_app/saved_models/R_hat.pkl
+flask_app/saved_models/svd_model.sav
+
 
 # Distribution / packaging
 .Python
@@ -135,6 +144,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-data/link.csv
-data/movie.csv
-data/rating.csv
