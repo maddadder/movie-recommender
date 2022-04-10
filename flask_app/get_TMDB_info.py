@@ -33,11 +33,11 @@ class TMDBInfo:
         movie = Movie()
         print(movie)
         m = movie.details(movieId)
-        poster = m.poster_path
         image_base = 'http://image.tmdb.org/t/p/w185'
-        image_url = image_base+poster
-
-        return m.overview, image_url, m.title, m.popularity, m.release_date
+        poster_path = image_base
+        if getattr(m, 'poster_path', 'n/a') is not None:
+            poster_path = image_base+getattr(m, 'poster_path', 'n/a')
+        return getattr(m, 'overview', 'n/a'), poster_path, getattr(m, 'title', 'n/a'), getattr(m, 'popularity', 'n/a'), getattr(m, 'release_date', 'n/a')
 
     def get_movie_trailer(self):
         """Get movie trailer from TMDB
@@ -50,19 +50,25 @@ class TMDBInfo:
             self.api_key,
             self.language,
         )
-        rec = requests.request('GET', url)
-        rec = rec.json()["results"]
         key = []
         site = []
         name = []
-        for dict1 in rec:
-            if dict1["type"] == "Trailer":
-                key.append(dict1["key"])
-                site.append(dict1["site"])
-                name.append(dict1["name"])
-        self.key = key
-        self.name = name
-        self.site = site
+        try:
+            rec = requests.request('GET', url)
+            rec = rec.json()["results"]
+            
+            for dict1 in rec:
+                if dict1["type"] == "Trailer":
+                    key.append(dict1["key"])
+                    site.append(dict1["site"])
+                    name.append(dict1["name"])
+            self.key = key
+            self.name = name
+            self.site = site
+        except:
+            self.key = key
+            self.name = name
+            self.site = site
 
     def get_video_url(self):
         """Create correct URL to embed the movie trailer in HTML code

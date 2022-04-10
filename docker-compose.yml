@@ -2,7 +2,7 @@ version: '2'
 
 services:
     movie-recommender:
-        image: 192.168.1.151:32000/movie-recommender:1.0.9
+        image: 192.168.1.151:32000/movie-recommender:1.0.12
         build:
             context: .
             dockerfile: ./Dockerfile

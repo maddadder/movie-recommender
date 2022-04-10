@@ -102,13 +102,15 @@ def recommand_n(predictions, n=10, rating=False, uid=0):
     recommendation = []
     cols = ["userId", "movieId", "rating"]
     recommendations = pd.DataFrame(columns=cols)
+    chunks = []
     for uid, user_ratings in top_n.items():
         recommendation = [iid for (iid, _) in user_ratings]
         rating = [est for (_, est) in user_ratings]
         for rec, ratings in zip(recommendation, rating):
             agg = {'userId': uid, 'movieId': rec, 'rating': ratings}
-            recommendations = recommendations.append(
-                agg, ignore_index=True)
+            chunks.append(agg)
+    chunks = pd.DataFrame(chunks)
+    recommendations = pd.concat([recommendations,chunks], ignore_index=True)
 
     if rating:
         recommendations = recommendations
@@ -211,7 +213,7 @@ def recomandations_similar_users(similar_users, orig_data, cols_above, cols_belo
         recomand = recommand_n(pred.to_dict(), 10, True, uid=usr)
         recomand["rating_sim"] = recomand["rating"] * sim
         recomand["sim"] = sim
-        final_recomand = final_recomand.append(recomand, ignore_index=True)
+        final_recomand = pd.concat([final_recomand,recomand], ignore_index=True)
     return final_recomand
 
 
@@ -225,11 +227,14 @@ def collaborative_filtering(final_recomand, n, new_user_input):
     """
 
     final_recomand["rating_sim"] = final_recomand["rating_sim"].astype(float)
-    recomand_sum = final_recomand.groupby(
-        "movieId")[["rating_sim", "sim"]].sum().reset_index()
+    recomand_sum = final_recomand.groupby(['movieId']).agg(
+        rating = ('rating','sum'),
+        rating_sim = ('rating_sim','sum'),
+        sim = ('sim','sum'),
+    ).reset_index()
     recomand_sum["most_similar"] = recomand_sum["rating_sim"] / \
-        final_recomand["sim"]
-
+        recomand_sum["sim"]
+    #recomand_sum["most_similar"] = recomand_sum["rating_sim"]
     user_recomand = recomand_sum[~recomand_sum["movieId"].isin(list(new_user_input.keys()))].sort_values(
         by="most_similar", ascending=False)["movieId"][:n]
     user_recomand = pd.DataFrame(
