@@ -17,7 +17,7 @@ engine = create_engine(
 
 # read in movie rating data
 select_query = """
-    SELECT * FROM movie_ratings ORDER BY "userId" LIMIT 300000;
+    SELECT * FROM movie_ratings ORDER BY "userId" LIMIT 100000;
     """
 engine_output = engine.execute(select_query)
 

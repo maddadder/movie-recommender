@@ -32,17 +32,6 @@ if __name__ == "__main__":
     R_surpise = R_surpise.build_full_trainset()
     svd.fit(R_surpise)
 
-    # test and fill in the missing ratings
-    u_have_lots_of_ram = False
-    if u_have_lots_of_ram:
-        testset = R_surpise.build_anti_testset()
-        predictions = svd.test(testset)
-        # score model
-        print(accuracy.rmse(predictions))
-        # 0.7426613175948654
-        print(accuracy.mse(predictions))
-        # 0.5515458326517415
-
     # Reconstruction of original matrix
 
     original = np.zeros((R_surpise.n_users, R_surpise.n_items))
@@ -67,3 +56,14 @@ if __name__ == "__main__":
     filename = './flask_app/saved_models/svd_model.sav'
 
     joblib.dump(svd, filename)
+
+    # test and fill in the missing ratings
+    u_have_lots_of_ram = False
+    if u_have_lots_of_ram:
+        testset = R_surpise.build_anti_testset()
+        predictions = svd.test(testset)
+        # score model
+        print(accuracy.rmse(predictions))
+        # 0.7426613175948654
+        print(accuracy.mse(predictions))
+        # 0.5515458326517415

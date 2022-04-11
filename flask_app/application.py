@@ -126,29 +126,29 @@ def recommender():
 
     # display only the titles
     rec = pd.merge(rec, movies_df, on='movieId')
-    recs = rec["title"]
 
     # get information from TMDB
     rec_link = pd.merge(rec, link, on='movieId')
     rec_link["tmdbId"] = rec_link["tmdbId"].astype(float).astype(int)
+    print(rec_link.columns)
     movie_info = pd.DataFrame(columns=["title", "overview", "image_url", "popularity",
-                                       "release_date", "video_url"])
+                                       "release_date", "video_url", "rating", "internal_title"])
     chunks = []
-    for i in rec_link["tmdbId"]:
-        t = TMDBInfo(movieId=i, api_key=tmdb.api_key, tmdb=TMDb())
+    for i in rec_link.values.tolist():
+        t = TMDBInfo(movieId=i[7], api_key=tmdb.api_key, tmdb=TMDb())
         overview, image_url, title, popularity, release_date = t.get_details()
         t.get_movie_trailer()
         video_url = t.get_video_url()
 
         args = {"title": title, "overview": overview, "image_url": image_url, "popularity": popularity,
-                "release_date": release_date, "video_url": video_url}
+                "release_date": release_date, "video_url": video_url, "rating":i[1], "internal_title": i[5]}
         chunks.append(args)
     chunks = pd.DataFrame(chunks)
     movie_info = pd.concat([movie_info, chunks], ignore_index=True)
 
     # reset top 10
     top10 = pd.DataFrame()
-    return render_template('recommendations.html', movies=recs, movie_info=movie_info)
+    return render_template('recommendations.html', movie_info=movie_info)
 
 
 if __name__ == "__main__":

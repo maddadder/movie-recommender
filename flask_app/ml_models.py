@@ -235,10 +235,12 @@ def collaborative_filtering(final_recomand, n, new_user_input):
     recomand_sum["most_similar"] = recomand_sum["rating_sim"] / \
         recomand_sum["sim"]
     #recomand_sum["most_similar"] = recomand_sum["rating_sim"]
-    user_recomand = recomand_sum[~recomand_sum["movieId"].isin(list(new_user_input.keys()))].sort_values(
-        by="most_similar", ascending=False)["movieId"][:n]
-    user_recomand = pd.DataFrame(
-        pd.Series(user_recomand, name="movieId"), columns=["movieId"])
+    user_recomand = recomand_sum[~recomand_sum["movieId"].isin(list(new_user_input.keys()))] \
+        .sort_values(by = ['most_similar', 'rating'], ascending = [False, False], na_position = 'last')[:n]
+
+
+    #user_recomand = pd.DataFrame(
+    #    pd.Series(user_recomand, name="movieId"), columns=["movieId"])
 
     user_recomand["movieId"] = user_recomand["movieId"].astype(float).astype(int)
 
