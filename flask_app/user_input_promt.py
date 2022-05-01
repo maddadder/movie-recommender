@@ -49,8 +49,8 @@ def get_most_rated():
     movies_with_title = pd.merge(sorted_matrix, movies, on='movieId')
 
     # categorizes movies into old and new category, then selects those with highest standard dev
-    old = movies_with_title[movies_with_title["year"] <= 2010].head(200)
-    new = movies_with_title[movies_with_title["year"] > 2010].head(200)
+    old = movies_with_title[movies_with_title["year"] <= movies_with_title["year"].mean()].head(200)
+    new = movies_with_title[movies_with_title["year"] > movies_with_title["year"].mean()].head(200)
     print(movies_with_title["year"].mean())
     old.sort_values(by="std_rating", ascending=False, inplace=True)
     new.sort_values(by="std_rating", ascending=False, inplace=True)

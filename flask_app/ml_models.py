@@ -25,8 +25,8 @@ def split_data(thrsh, movies):
         - 2 lists of Movie Ids: one with movie above the threshold, 
             one with movies below the threshold
     """
-    cols_above = [iid for iid in movies[movies["year"] >= thrsh]["movieId"]]
-    cols_below = [iid for iid in movies[movies["year"] < thrsh]["movieId"]]
+    cols_above = [iid for iid in movies[movies["year"] >= movies["year"].mean()]["movieId"]]
+    cols_below = [iid for iid in movies[movies["year"] < movies["year"].mean()]["movieId"]]
     cols_none = [iid for iid in movies[movies["year"] == 0]["movieId"]]
 
     return cols_above, cols_below, cols_none
