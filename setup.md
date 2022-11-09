@@ -15,12 +15,6 @@
     microk8s kubectl create -f ./minimal-postgres-manifest.yaml
     # go get the secret of zalando.acid-minimal-cluster.credentials.postgresql.acid.zalan.do and save in docker file
     # rename Dockerfile.example to Dockerfile
-    # build the image with the secret
-    docker-compose build
-    docker push 192.168.1.151:32000/movie-recommender:1.0.22
-    microk8s helm3 install movie-recommender ./movie-recommender
-    OR 
-    helm upgrade movie-recommender ./movie-recommender
     #kubectl -n default expose deployment acid-minimal-cluster-0 --port=5432
     # get name of master pod of acid-minimal-cluster
     export PGMASTER=$(microk8s kubectl get pods -o jsonpath={.items..metadata.name} -l application=spilo,cluster-name=acid-minimal-cluster,spilo-role=master -n default)
@@ -28,11 +22,17 @@
     # set up port forward
     microk8s kubectl port-forward $PGMASTER 6432:5432 -n default
     ```
-    # reinstalling
-    - microk8s kubectl get pdb
-    - then delete it if you get an error about an existing pdb
-    - then run microk8s kubectl delete -f ./minimal-postgres-manifest.yaml
-    - then run microk8s kubectl apply -f ./minimal-postgres-manifest.yaml
+#### build the image with the secret
+```
+docker-compose build
+docker push neon-registry.18e7-091a-7bb4-d81e.neoncluster.io/leenet/movie-recommender:1.0.27
+helm upgrade movie-recommender ./movie-recommender --namespace leenet
+```
+#### reinstalling
+- microk8s kubectl get pdb
+- then delete it if you get an error about an existing pdb
+- then run microk8s kubectl delete -f ./minimal-postgres-manifest.yaml
+- then run microk8s kubectl apply -f ./minimal-postgres-manifest.yaml
 
 
 ### patch postgress to use nodeport (if installed)

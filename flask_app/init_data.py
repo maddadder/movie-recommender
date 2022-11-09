@@ -98,30 +98,6 @@ def create_tables(conn, tables: List[Table]):
     for table in tables:
         create_table(conn, table)
 
-def import_data():
-
-    conn = psycopg2.connect(database=config2.database_name,user=config2.database_user, password=config2.psql_pw, host=config2.host, port=config2.port)
-    
-    conn.autocommit = True
-    cursor = conn.cursor()
-    
-    #movieId,title,genres
-    
-    sql2 = '''COPY movies(movieId,title,genres)
-    FROM '../data/movies.csv'
-    DELIMITER ','
-    CSV HEADER;'''
-    
-    cursor.execute(sql2)
-    
-    sql3 = '''select * from movies;'''
-    cursor.execute(sql3)
-    for i in cursor.fetchall():
-        print(i)
-    
-    conn.commit()
-    conn.close()
-
 is_success = False
 with open("./pg_config.yaml", encoding="utf8") as txt:
     tables = read_definitions(txt)
@@ -132,19 +108,19 @@ with open("./pg_config.yaml", encoding="utf8") as txt:
         conn.commit()
     
         engine = create_engine(f"postgresql://{config2.database_user}:{config2.psql_pw}@{config2.host}:{config2.port}/{config2.database_name}")
-        with open('./data/movie.csv', 'r', encoding="utf8") as file:
+        with open('./data/movies.csv', 'r', encoding="utf8") as file:
             #movieId,title,genres
             for df in pd.read_csv(file, index_col='movieId', chunksize = 1000, encoding="utf8"):
                 df = df.dropna()
                 df.to_sql(name = 'movies', con = engine, if_exists = 'append', index_label = 'movieId')
-        with open('./data/rating.csv', 'r') as file:
-            #userId,movieId,rating,timestamp
-            for df in pd.read_csv(file, index_col='userId', chunksize = 1000, encoding="utf8"):
-                df = df.dropna()
-                df.to_sql(name = 'movie_ratings', con = engine, if_exists = 'append', index_label = 'userId')
-        with open('./data/link.csv', 'r') as file:
+        with open('./data/links.csv', 'r', encoding="utf8") as file:
             #movieId,imdbId,tmdbId
             for df in pd.read_csv(file, index_col='movieId', chunksize = 1000, encoding="utf8"):
                 df = df.dropna()
                 df.to_sql(name = 'link', con = engine, if_exists = 'append', index_label = 'movieId')
+        with open('./data/ratings.csv', 'r', encoding="utf8") as file:
+            #userId,movieId,rating,timestamp
+            for df in pd.read_csv(file, index_col='userId', chunksize = 1000, encoding="utf8"):
+                df = df.dropna()
+                df.to_sql(name = 'movie_ratings', con = engine, if_exists = 'append', index_label = 'userId')
         is_success = True
