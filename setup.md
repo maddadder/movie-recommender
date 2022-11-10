@@ -25,7 +25,7 @@
 #### build the image with the secret
 ```
 docker-compose build
-docker push neon-registry.18e7-091a-7bb4-d81e.neoncluster.io/leenet/movie-recommender:1.0.27
+docker push neon-registry.18e7-091a-7bb4-d81e.neoncluster.io/leenet/movie-recommender:1.0.29
 helm upgrade movie-recommender ./movie-recommender --namespace leenet
 ```
 #### reinstalling
