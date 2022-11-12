@@ -2,7 +2,7 @@ version: '2'
 
 services:
     movie-recommender:
-        image: neon-registry.18e7-091a-7bb4-d81e.neoncluster.io/leenet/movie-recommender:1.0.32
+        image: neon-registry.18e7-091a-7bb4-d81e.neoncluster.io/leenet/movie-recommender:1.0.33
         build:
             context: .
             dockerfile: ./Dockerfile
