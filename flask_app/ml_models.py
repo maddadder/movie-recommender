@@ -180,7 +180,7 @@ def calculate_similarity_matrix(new_user_input, orig_data, n_users=5):
     new_user = pd.DataFrame(new_user_input, index=[random.randint(1_000, 2_000)],
                             columns=orig_data.columns)
     new_user.fillna(orig_data.mean().mean(), inplace=True)
-    orig_data = orig_data.append(new_user, ignore_index=True)
+    orig_data = pd.concat([orig_data, new_user], ignore_index=True)
     sim_matrix = pd.DataFrame(cosine_similarity(orig_data)).iloc[-1]
     sim_matrix.index = list(range(1, len(orig_data)+1))
     sim_matrix.sort_values(ascending=False, inplace=True)

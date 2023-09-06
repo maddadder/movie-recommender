@@ -21,12 +21,15 @@
 
     # set up port forward
     microk8s kubectl port-forward $PGMASTER 6432:5432 -n default
+
+    # This works better:
+    while true; do kubectl port-forward --namespace default pod/acid-minimal-cluster-0 5432:5432; done
     ```
 #### build the image with the secret
 ```
 docker-compose build
-docker push neon-registry.18e7-091a-7bb4-d81e.neoncluster.io/leenet/movie-recommender:1.0.33
-helm upgrade movie-recommender ./movie-recommender --namespace leenet
+docker push 192.168.1.151:32000/movie-recommender:1.0.41
+helm upgrade movie-recommender ./movie-recommender --namespace default
 ```
 #### reinstalling
 - microk8s kubectl get pdb
@@ -39,4 +42,10 @@ helm upgrade movie-recommender ./movie-recommender --namespace leenet
 ```
 # just keep in mind this will reset after a period of time
 kubectl patch svc acid-minimal-cluster --patch '{"spec": { "type": "NodePort", "ports": [ { "nodePort": 30001, "port": 5432, "protocol": "TCP", "targetPort": 5432 } ] } }'
+```
+
+### Postgres Admin Tasks with pgAdmin4
+```
+while true; do kubectl port-forward --namespace default pod/acid-minimal-cluster-0 5432:5432; done
+Then connect via pg-admin-4
 ```

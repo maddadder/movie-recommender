@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import sqlalchemy
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 try:
     import flask_app.config2 as config2
@@ -16,15 +16,15 @@ engine = create_engine(
     f"postgresql://{config2.database_user}:{config2.psql_pw}@{config2.host}:{config2.port}/{config2.database_name}")
 
 # read in movie rating data
-select_query = """
-    SELECT * FROM movie_ratings ORDER BY "userId" LIMIT 400000;
-    """
-engine_output = engine.execute(select_query)
+select_query = text('SELECT * FROM movie_ratings ORDER BY "userId" LIMIT 400000;')
+connection = engine.connect()
+
+engine_output = connection.execute(select_query)
 
 final_dict = []
+column_names = list(engine_output.keys())  # Get the column names
 for row in engine_output:
-    dict1 = {"userId": int((row["userId"])), "movieId": int((row["movieId"])),
-             "rating": float((row["rating"]))}
+    dict1 = {"userId": int(row[column_names.index("userId")]), "movieId": int(row[column_names.index("movieId")]), "rating": float(row[column_names.index("rating")])}
     final_dict.append(dict1)
 
 user_rating_matrix = pd.DataFrame(final_dict)
@@ -38,15 +38,14 @@ user_rating = user_rating_matrix.pivot(
 ratings_pivot = user_rating.replace(np.nan, 0)
 
 # read in data for movies and title
-select_movies = """
-    SELECT * FROM movies;
-    """
-engine_output_movies = engine.execute(select_movies)
+select_movies = text('SELECT * FROM movies;')
+
+engine_output_movies = connection.execute(select_movies)
 
 movies_final = []
+column_names_movies = list(engine_output_movies.keys())  # Get the column names
 for row in engine_output_movies:
-    dict1 = {"movieId": int((row["movieId"])),
-             "title": str((row["title"]))}
+    dict1 = {"movieId": int(row[column_names_movies.index("movieId")]), "title": str(row[column_names_movies.index("title")])}
     movies_final.append(dict1)
 
 movies_df = pd.DataFrame(movies_final)
@@ -62,15 +61,16 @@ for i, data in movies_df.iterrows():
 movies = movies_df[['title', 'year', 'movieId']]
 
 # read in the link data for IMDB and TMDB
-select_link = """
-    SELECT * FROM link;
-    """
-engine_output_link = engine.execute(select_link)
+select_link = text('SELECT * FROM link;')
+
+engine_output_link = connection.execute(select_link)
 
 movies_link = []
-for row in engine_output_link:
-    dict1 = {"movieId": int((row["movieId"])),
-             "tmdbId": str((row["tmdbId"]))}
-    movies_link.append(dict1)
+column_names_link = list(engine_output_link.keys())  # Get the column names
 
+for row in engine_output_link:
+    dict1 = {"movieId": int(row[column_names_link.index("movieId")]), "tmdbId": str(row[column_names_link.index("tmdbId")])}
+    movies_link.append(dict1)
+    
 link = pd.DataFrame(movies_link)
+connection.close()

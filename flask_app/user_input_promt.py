@@ -35,15 +35,11 @@ def get_most_rated():
     """
     # data preparation
 
-    user_rating_matrix["sum_rating"] = user_rating_matrix.groupby("movieId")[
-        "rating"].transform("sum")
-    user_rating_matrix["std_rating"] = user_rating_matrix.groupby(
-        "movieId")["rating"].transform("std")
+    user_rating_matrix["sum_rating"] = user_rating_matrix.groupby("movieId")["rating"].transform("sum")
+    user_rating_matrix["std_rating"] = user_rating_matrix.groupby("movieId")["rating"].transform("std")
 
     # removes duplicates created by the transform function
-    sorted_matrix = user_rating_matrix.groupby(
-        ["movieId"])["std_rating", "sum_rating"].mean().sort_values(by='sum_rating', ascending=False)
-
+    sorted_matrix = user_rating_matrix.groupby(["movieId"])[["std_rating", "sum_rating"]].mean().sort_values(by='sum_rating', ascending=False)
 
     # merges data frame with movies data frame containing titles
     movies_with_title = pd.merge(sorted_matrix, movies, on='movieId')
